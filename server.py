@@ -1,5 +1,15 @@
+"""
+A Simple Server class that allows to configure a socket in a very simple way.
+It is for studying purposes only.
+"""
+
 import socket
 import sys
+
+
+__author__ = "Facundo Victor"
+__license__ = "MIT"
+__email__ = "facundovt@gmail.com"
 
 
 class SimpleServer(object):
@@ -31,4 +41,6 @@ class SimpleServer(object):
         :param port: The transport layer identifier of an application
         :ptype: Integer
         """
-        self.sock.connect((host, port))
+        server_address = (host, port)
+        self.sock.connect(server_address)
+        print('starting up on %s port %s' % server_address)
