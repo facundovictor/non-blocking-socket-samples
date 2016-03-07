@@ -31,16 +31,24 @@ class SimpleServer(object):
         if not blocking:
             self.sock.setblocking(0)
 
-    def connect(self, host, port):
+    def bind_and_listeen(self, host, port, max_conn=5):
         """
-        Connects the server to the "host", and prepares it to listen on "port"
+        Binds the socket to the "host", and prepares it to listen on "port"
+        respecting a maximum of "max_connections"
 
         :param host: The network layer identifier of an interface
         :ptype: String or Integer (see help(socket))
 
         :param port: The transport layer identifier of an application
         :ptype: Integer
+
+        :param max_conn: Number of unaccepted connections that the system will
+                         allow before refusing new connections.
+        :ptype: Integer
         """
         server_address = (host, port)
-        self.sock.connect(server_address)
-        print('starting up on %s port %s' % server_address)
+        self.sock.bind(server_address)
+        self.sock.listen(max_conn)
+        print('Socket binded to %s port %s,' % server_address + (max_conn,)
+
+
