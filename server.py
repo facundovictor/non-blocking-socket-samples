@@ -28,8 +28,15 @@ class SimpleServer(object):
         :ptype: Boolean
         """
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.blocking = blocking
         if not blocking:
             self.sock.setblocking(0)
+            # Sockets from which we expect to read
+            self.inputs = [self.sock]
+            # Sockets to which we expect to write
+            self.outputs = []
+        # Socket registered handlers
+        self.handlers = []
 
     def bind_and_listeen(self, host, port, max_conn=5):
         """
@@ -49,6 +56,60 @@ class SimpleServer(object):
         server_address = (host, port)
         self.sock.bind(server_address)
         self.sock.listen(max_conn)
-        print('Socket binded to %s port %s,' % server_address + (max_conn,)
+        print('Socket binded to %s port %s,' % server_address + (max_conn,))
+        if self.blocking:
+            self.manage_simple_connection()
+        else:
+            self.manage_connections()
 
+    def register_handler(self, handler):
+        """
+        Register a handler method to be executed on accepted connections. It
+        must have the tuple (input: Socket, output: Socket, error: Socket) as
+        an argument. If the handler already is registered, the method returns
+        False.
 
+        :param handler: Socket event handler
+        :ptype: Method
+
+        :returns: True if the handler is registered, False in other case.
+        :rtype: Boolean
+        """
+        if self.is_registered(handler):
+            return False
+        else:
+            self.handlers += [handler]
+            return True
+
+    def unregister_handlre(self, handler):
+        """
+        Unregister the handler so it no longer will be executed on accepted
+        connections.
+
+        :param handler: Socket event handler
+        :ptype: Method
+
+        :returns: True if the handler is unregistered, False in other case.
+        :rtype: Boolean
+        """
+        try:
+            self.handlers.remove(handler)
+            return True
+        except ValueError:
+            return False
+
+    def is_registered(self, handler):
+        """
+        Verify if the handler is registered.
+
+        :param handler: Socket event handler
+        :ptype: Method
+
+        :returns: True if the handler is registered, False in other case.
+        :rtype: Boolean
+        """
+        try:
+            self.handlers.index(handler)
+            return True
+        except ValueError:
+            return False
