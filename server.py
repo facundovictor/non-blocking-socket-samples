@@ -72,7 +72,37 @@ class SimpleServer(object):
                 print('Using a manager for multiple connections')
                 self.manage_multiple_connections()
         else:
-            self.manage_connections()
+            print('Socket binded to %s port %s' % server_address)
+
+    def close_connection(self, sock=None):
+        """
+        Properly close a socket doing a shudown first.
+
+        :param sock: The sockt to close, The default is the self.sock socket.
+        :ptype: socket
+        """
+        if sock is None:
+            self.sock.shutdown()
+            self.sock.close()
+        else:
+            sock.shutdown()
+            sock.close()
+
+    def manage_simple_connection(self):
+        """
+        Manage a single simple connection using the accept method. It traverses
+        all the handlers and executes them.
+        """
+        # Accept a connection form a client
+        (client_socket, address) = self.sock.accept()
+        print('Socket accepted connection from %s' % (address))
+        for handler in self.handlers:
+            handler((client_socket, client_socket, client_socket))
+        self.close_connection(client_socket)
+
+    def manage_multiple_connections(self):
+        # Sockets from which we expect to read
+        outputs = []
 
     def register_handler(self, handler):
         """
