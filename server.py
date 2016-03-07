@@ -73,6 +73,7 @@ class SimpleServer(object):
                 self.manage_multiple_connections()
         else:
             print('Socket binded to %s port %s' % server_address)
+            self.manage_connectionless_clients()
 
     def close_connection(self, sock=None):
         """
@@ -88,6 +89,14 @@ class SimpleServer(object):
             sock.shutdown()
             sock.close()
 
+    def manage_connectionless_clients(self):
+        """
+        The connectionless client manager only delivers the already set up
+        socket to every registered handler.
+        """
+        for handler in self.handlers:
+            handler((self.sock, self.sock, None))
+
     def manage_simple_connection(self):
         """
         Manage a single simple connection using the accept method. It traverses
@@ -97,7 +106,7 @@ class SimpleServer(object):
         (client_socket, address) = self.sock.accept()
         print('Socket accepted connection from %s' % (address))
         for handler in self.handlers:
-            handler((client_socket, client_socket, client_socket))
+            handler((client_socket, client_socket, None))
         self.close_connection(client_socket)
 
     def manage_multiple_connections(self):
