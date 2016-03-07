@@ -27,14 +27,20 @@ class SimpleServer(object):
                                     be connection oriented or not
         :ptype: Boolean
         """
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.blocking = blocking
-        if not blocking:
-            self.sock.setblocking(0)
-            # Sockets from which we expect to read
-            self.inputs = [self.sock]
-            # Sockets to which we expect to write
-            self.outputs = []
+        self.connection_oriented = connection_oriented
+        if connection_oriented:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            if not blocking:
+                self.sock.setblocking(0)
+                # Sockets from which we expect to read
+                self.inputs = [self.sock]
+                # Sockets to which we expect to write
+                self.outputs = []
+                # Sockets from which we want to check for errors
+                self.errors = [self.sock]
+        else:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # Socket registered handlers
         self.handlers = []
 
@@ -55,10 +61,16 @@ class SimpleServer(object):
         """
         server_address = (host, port)
         self.sock.bind(server_address)
-        self.sock.listen(max_conn)
-        print('Socket binded to %s port %s,' % server_address + (max_conn,))
-        if self.blocking:
-            self.manage_simple_connection()
+        if self.connection_oriented:
+            self.sock.listen(max_conn)
+            print('Socket binded to %s port %s and willing to receive a \
+                   maximum of %s connections.' % server_address + (max_conn,))
+            if self.blocking:
+                print('Using a simple single connection manager')
+                self.manage_simple_connection()
+            else:
+                print('Using a manager for multiple connections')
+                self.manage_multiple_connections()
         else:
             self.manage_connections()
 
