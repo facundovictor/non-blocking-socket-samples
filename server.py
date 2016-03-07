@@ -4,7 +4,6 @@ It is for studying purposes only.
 """
 
 import socket
-import sys
 
 
 __author__ = "Facundo Victor"
@@ -59,6 +58,8 @@ class SimpleServer(object):
                          allow before refusing new connections.
         :ptype: Integer
         """
+        self.host = host
+        self.port = port
         server_address = (host, port)
         self.sock.bind(server_address)
         if self.connection_oriented:
@@ -129,7 +130,7 @@ class SimpleServer(object):
         if self.is_registered(handler):
             return False
         else:
-            self.handlers += [handler]
+            self.handlers.append(handler)
             return True
 
     def unregister_handler(self, handler):
