@@ -81,7 +81,7 @@ class SimpleServer(object):
             self.handlers += [handler]
             return True
 
-    def unregister_handlre(self, handler):
+    def unregister_handler(self, handler):
         """
         Unregister the handler so it no longer will be executed on accepted
         connections.
