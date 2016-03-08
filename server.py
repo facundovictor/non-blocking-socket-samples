@@ -65,7 +65,7 @@ class SimpleServer(object):
         if self.connection_oriented:
             self.sock.listen(max_conn)
             print('Socket binded to %s port %s and willing to receive a \
-                   maximum of %s connections.' % server_address + (max_conn,))
+                   maximum of %s connections.' % (host, port, max_conn))
             if self.blocking:
                 print('Using a simple single connection manager')
                 self.manage_simple_connection()
@@ -84,11 +84,12 @@ class SimpleServer(object):
         :ptype: socket
         """
         if sock is None:
-            self.sock.shutdown()
+            self.sock.shutdown(socket.SHUT_RDWR)
             self.sock.close()
         else:
-            sock.shutdown()
+            sock.shutdown(socket.SHUT_RDWR)
             sock.close()
+        print('Socket closed for read and write')
 
     def manage_connectionless_clients(self):
         """
@@ -105,7 +106,7 @@ class SimpleServer(object):
         """
         # Accept a connection form a client
         (client_socket, address) = self.sock.accept()
-        print('Socket accepted connection from %s' % (address))
+        print('Socket accepted connection from {0}'.format(address))
         for handler in self.handlers:
             handler((client_socket, client_socket, None))
         self.close_connection(client_socket)
