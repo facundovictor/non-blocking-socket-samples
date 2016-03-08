@@ -3,7 +3,7 @@ A Simple example for testing the SimpleServer Class. A simple connectionless
 server. It is for studying purposes only.
 """
 
-from server import SimpleServer
+from simple.server import SimpleServer
 
 
 __author__ = "Facundo Victor"

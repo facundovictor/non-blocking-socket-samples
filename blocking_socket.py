@@ -1,9 +1,11 @@
 """
 A Simple example for testing the SimpleServer Class. A simple telnet server.
 It is for studying purposes only.
+
+To try it, just execute "telnet localhost 7878"
 """
 
-from server import SimpleServer
+from simple.server import SimpleServer
 
 
 __author__ = "Facundo Victor"
