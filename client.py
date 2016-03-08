@@ -55,10 +55,10 @@ class SimpleClient(object):
         :ptype: socket
         """
         if sock is None:
-            self.sock.shutdown()
+            self.sock.shutdown(socket.SHUT_RDWR)
             self.sock.close()
         else:
-            sock.shutdown()
+            sock.shutdown(socket.SHUT_RDWR)
             sock.close()
 
     def send(self, message):
