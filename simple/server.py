@@ -116,6 +116,10 @@ class SimpleServer(object):
         self.close_connection(client_socket)
 
     def manage_multiple_connections(self):
+        """
+        Manage multiple non-blocking tcp connections using the select method.
+        It travels all the handlres and executes them
+        """
         while self.inputs:
             print("Server waiting for next event")
             (readable, writable, exceptional) = select.select(
