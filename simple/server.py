@@ -4,6 +4,7 @@ It is for studying purposes only.
 """
 
 import socket
+import select
 
 
 __author__ = "Facundo Victor"
@@ -115,8 +116,16 @@ class SimpleServer(object):
         self.close_connection(client_socket)
 
     def manage_multiple_connections(self):
-        # Sockets from which we expect to read
-        outputs = []
+        while self.inputs:
+            print("Server waiting for next event")
+            (readable, writable, exceptional) = select.select(
+                self.inputs,
+                self.outputs,
+                self.inputs
+            )
+            for handler in self.handlers:
+                handler((readable, writable, exceptional))
+        self.close_connection(self.sock)
 
     def register_handler(self, handler):
         """
