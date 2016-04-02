@@ -31,13 +31,14 @@ def handle_readables(readable):
             message_queues[connection] = Queue.Queue()
         else:
             data = s.recv(1024)
+            (host, port) = s.getpeername()
             if data:
-                print("Received %s from %s" % (data, s.getpeername()))
+                print("Received data from %s:%s = \n%s" % (host, port, data))
                 message_queues[s].put(data)
                 if s not in SS.outputs:
                     SS.outputs.append(s)
             else:
-                print("NO DATA: Closing client %s" % (s.getpeername()))
+                print("NO DATA: Closing client %s:%s" % (host, port))
                 if s in SS.outputs:
                     SS.outputs.remove(s)
                 SS.inputs.remove(s)
@@ -58,10 +59,11 @@ def handle_writables(writable):
             # Get the message from the Queue
             next_msg = message_queues[s].get_nowait()
         except:
-            print("Queue error for %s" % (s.getpeername()))
-            SS.outputs.renive(s)
+            print("Queue error for %s:%s" % s.getpeername())
+            SS.outputs.remove(s)
         else:
-            print("Sending '%s' to %s" % (next_msg, s.getpeername()))
+            (host, port) = s.getpeername()
+            print("Sending to %s:%s = \n%s" % (host, port, next_msg))
             s.send(next_msg)
 
 
@@ -73,7 +75,7 @@ def handle_exceptionals(exceptional):
     :ptype: socket[]
     """
     for s in exceptional:
-        print("Handling exceptional condifion for %s" % (s.getpeername()))
+        print("Handling exceptional condifion for %s:%s" % s.getpeername())
         SS.inputs.remove(s)
         if s in SS.outputs:
             SS.outputs.remove(s)
@@ -92,7 +94,7 @@ def handle_sockets(sockets):
     handle_readables(readable)
     handle_writables(writable)
     handle_exceptionals(exceptional)
-    SS.close_connection()
+
 
 # Outgoing message queues (socket:Queue)
 message_queues = {}

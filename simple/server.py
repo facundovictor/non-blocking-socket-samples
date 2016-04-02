@@ -1,6 +1,8 @@
 """
 A Simple Server class that allows to configure a socket in a very simple way.
 It is for studying purposes only.
+
+To try it, just open multiple connections to "telnet localhost 7878"
 """
 
 import socket
@@ -125,7 +127,7 @@ class SimpleServer(object):
             (readable, writable, exceptional) = select.select(
                 self.inputs,
                 self.outputs,
-                self.inputs
+                self.errors
             )
             for handler in self.handlers:
                 handler((readable, writable, exceptional))
