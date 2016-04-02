@@ -38,7 +38,7 @@ def handle_readables(readable):
                     SS.outputs.append(s)
             else:
                 print("NO DATA: Closing client %s" % (s.getpeername()))
-                if s not in SS.outputs:
+                if s in SS.outputs:
                     SS.outputs.remove(s)
                 SS.inputs.remove(s)
                 SS.close_connection(s)
