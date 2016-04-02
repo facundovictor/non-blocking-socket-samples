@@ -13,6 +13,24 @@ __license__ = "MIT"
 __email__ = "facundovt@gmail.com"
 
 
+def close_client(client_socket):
+    """
+    Given a client socket, it closes the connections and remove its queue.
+
+    :param client_socket: Socket to close.
+    :ptype: socket
+    """
+    if client_socket in SS.outputs:
+        SS.outputs.remove(client_socket)
+    if client_socket in SS.inputs:
+        SS.inputs.remove(client_socket)
+    if client_socket in SS.errors:
+        SS.errors.remove(client_socket)
+    SS.close_connection(client_socket)
+    # Remove message queue
+    del message_queues[client_socket]
+
+
 def handle_readables(readable):
     """
     Handle multiple readable sockets.
@@ -33,18 +51,19 @@ def handle_readables(readable):
             data = s.recv(1024)
             (host, port) = s.getpeername()
             if data:
-                print("Received data from %s:%s = \n%s" % (host, port, data))
-                message_queues[s].put(data)
-                if s not in SS.outputs:
-                    SS.outputs.append(s)
+                if data.strip() == 'exit':
+                    print("Exit signal received: Closing client %s:%s"
+                          % (host, port))
+                    close_client(s)
+                else:
+                    print("Received data from %s:%s = \n%s"
+                          % (host, port, data))
+                    message_queues[s].put(data)
+                    if s not in SS.outputs:
+                        SS.outputs.append(s)
             else:
                 print("NO DATA: Closing client %s:%s" % (host, port))
-                if s in SS.outputs:
-                    SS.outputs.remove(s)
-                SS.inputs.remove(s)
-                SS.close_connection(s)
-                # Remove message queue
-                del message_queues[s]
+                close_client(s)
 
 
 def handle_writables(writable):
