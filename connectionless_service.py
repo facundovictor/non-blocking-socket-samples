@@ -22,8 +22,8 @@ def handle_message(sockets=None):
                 (data, address) = readable.recvfrom(1024)
                 print('Received data: %s from %s' % (data, address))
                 if data:
-                    print('Sending a custom ACK to the client %s \
-                          '.format(address))
+                    print('Sending a custom ACK to the client %s'
+                          % (address.__str__()))
                     writable.sendto("Received ;)\n", address)
                 else:
                     print('Received empty data')
